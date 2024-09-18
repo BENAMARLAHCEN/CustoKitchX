@@ -24,6 +24,14 @@ public class Client {
         this.remise = remise;
     }
 
+    public Client(String nom, String adresse, String telephone, boolean estProfessionnel, double remise) {
+        this.nom = nom;
+        this.adresse = adresse;
+        this.telephone = telephone;
+        this.estProfessionnel = estProfessionnel;
+        this.remise = remise;
+    }
+
     // Getters and setters
 
 

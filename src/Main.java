@@ -1,7 +1,9 @@
+import controller.ClientController;
+
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        ClientController clientController = new ClientController();
     }
 }
