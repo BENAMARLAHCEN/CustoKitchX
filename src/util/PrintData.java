@@ -1,6 +1,7 @@
 package util;
 
 import model.Client;
+import model.Material;
 
 import java.util.List;
 
@@ -23,4 +24,24 @@ public class PrintData {
                 printClientData(client);
             }
     }
+
+    public static void printMaterialData(Material material) {
+        System.out.println("====================================");
+        System.out.println("ID: " + material.getId());
+        System.out.println("Nom: " + material.getNom());
+        System.out.println("Coût unitaire: " + material.getCoutUnitaire());
+        System.out.println("Quantité: " + material.getQuantite());
+        System.out.println("Coût transport: " + material.getCoutTransport());
+        System.out.println("Taxe TVA: " + material.getTauxTVA());
+        System.out.println("Coefficient qualité: " + material.getCoefficientQualite());
+        System.out.println("Projet ID: " + material.getProjetId());
+        System.out.println("====================================");
+    }
+
+    public static void printAllMaterialsData(List<Material> materials) {
+        for (Material material : materials) {
+            printMaterialData(material);
+        }
+    }
+
 }
