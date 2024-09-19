@@ -19,12 +19,11 @@ public class ProjectRepository implements IProjectRepository {
     }
 
     public Project createProject(Project project) {
-        String sql = "INSERT INTO projects (nom_projet, marge_beneficiaire,etat_projet, client_id) VALUES (?, ?, ?::etat_projet, ?) RETURNING id";
+        String sql = "INSERT INTO projects (nom_projet,etat_projet, client_id) VALUES (?, ?::etat_projet, ?) RETURNING id";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, project.getNomProjet());
-            statement.setDouble(2, project.getMargeBeneficiaire());
-            statement.setDouble(3, project.getCoutTotal());
-            statement.setInt(4, project.getClientId());
+            statement.setString(2, project.getEtatProjet().toString());
+            statement.setInt(3, project.getClientId());
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 project.setId(resultSet.getInt(1));
@@ -90,6 +89,18 @@ public class ProjectRepository implements IProjectRepository {
         String sql = "DELETE FROM projects WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, id);
+            return statement.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean applyMargeBeneficiaire(int id, double margeBeneficiaire){
+        String sql = "UPDATE projects SET marge_beneficiaire = ? WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setDouble(1, margeBeneficiaire);
+            statement.setInt(2, id);
             return statement.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
