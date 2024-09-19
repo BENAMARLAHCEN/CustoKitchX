@@ -1,5 +1,7 @@
 package model;
 
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Project {
@@ -35,6 +37,26 @@ public class Project {
         this.margeBeneficiaire = margeBeneficiaire;
         this.coutTotal = coutTotal;
         this.etatProjet = etatProjet;
+    }
+
+    public static List<Project> fromResultSet(ResultSet resultSet) {
+        List<Project> projects = new ArrayList<>();
+        try {
+            while (resultSet.next()) {
+                Project project = new Project(
+                    resultSet.getInt("id"),
+                    resultSet.getString("nom_projet"),
+                    resultSet.getDouble("marge_beneficiaire"),
+                    resultSet.getDouble("cout_total"),
+                    EtatProjet.valueOf(resultSet.getString("etat_projet")),
+                    resultSet.getInt("client_id")
+                );
+                projects.add(project);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return projects;
     }
 
     // Getters and setters
