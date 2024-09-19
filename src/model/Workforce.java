@@ -20,6 +20,13 @@ public class Workforce extends Component {
         this.productiviteOuvrier = productiviteOuvrier;
     }
 
+    public Workforce(String nom, double tauxHoraire, double heuresTravail, double productiviteOuvrier, int projetId) {
+        super(nom, "Workforce", projetId);
+        this.tauxHoraire = tauxHoraire;
+        this.heuresTravail = heuresTravail;
+        this.productiviteOuvrier = productiviteOuvrier;
+    }
+
     public static List<Workforce> fromResultSet(ResultSet resultSet) throws SQLException {
         List<Workforce> workforces = new ArrayList<>();
         try {
@@ -67,5 +74,14 @@ public class Workforce extends Component {
 
     public void setProductiviteOuvrier(double productiviteOuvrier) {
         this.productiviteOuvrier = productiviteOuvrier;
+    }
+
+    public double getCoutTotal() {
+        return tauxHoraire * heuresTravail * productiviteOuvrier;
+    }
+
+
+    public double getCoutTotalTVA() {
+        return getCoutTotal() * (1 + getTauxTVA() / 100);
     }
 }

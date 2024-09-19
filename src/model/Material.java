@@ -86,4 +86,12 @@ public class Material extends Component {
         }
         return null;
     }
+
+    public double getCoutTotal() {
+        return coutUnitaire * quantite + coutTransport;
+    }
+
+    public double getCoutTotalTVA() {
+        return getCoutTotal() * (1 + getTauxTVA() / 100);
+    }
 }
