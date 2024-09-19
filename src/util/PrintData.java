@@ -2,6 +2,8 @@ package util;
 
 import model.Client;
 import model.Material;
+import model.Project;
+import model.Workforce;
 
 import java.util.List;
 
@@ -43,5 +45,46 @@ public class PrintData {
             printMaterialData(material);
         }
     }
+
+    public static void printWorkforceData(Workforce workforce) {
+        System.out.println("====================================");
+        System.out.println("ID: " + workforce.getId());
+        System.out.println("Nom: " + workforce.getNom());
+        System.out.println("Taux horaire: " + workforce.getTauxHoraire());
+        System.out.println("Nombre d'heures: " + workforce.getHeuresTravail());
+        System.out.println("Productivité ouvrier: " + workforce.getProductiviteOuvrier());
+        System.out.println("Taux TVA: " + workforce.getTauxTVA());
+        System.out.println("Projet ID: " + workforce.getProjetId());
+        System.out.println("====================================");
+    }
+
+    public static void printAllWorkforcesData(List<Workforce> workforces) {
+        for (Workforce workforce : workforces) {
+            printWorkforceData(workforce);
+        }
+    }
+
+    public static void printProjectData(Project project) {
+        System.out.println("====================================");
+        System.out.println("ID: " + project.getId());
+        System.out.println("Nom: " + project.getNomProjet());
+        System.out.println("Marge bénéficiaire: " + project.getMargeBeneficiaire());
+        System.out.println("Coût total: " + project.getCoutTotal());
+        System.out.println("État projet: " + project.getEtatProjet());
+        System.out.println("Client ID: " + project.getClientId());
+        System.out.println("====================================");
+    }
+
+    public static void printAllProjectsData(List<Project> projects) {
+        for (Project project : projects) {
+            printProjectData(project);
+        }
+    }
+
+    public static void printWelcomeMessage() {
+        System.out.println("Welcome to the project management system");
+    }
+
+
 
 }
