@@ -17,7 +17,7 @@ public class DevisRepository implements IDevisRepository {
         this.connection = DatabaseConnection.getInstance().getConnection();
     }
 
-    public void createDevis(Devis devis) {
+    public boolean createDevis(Devis devis) {
         try {
             String query = "INSERT INTO devis (montant_estime, date_emission, date_validite, accepte, project_id) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement statement = connection.prepareStatement(query);
@@ -26,10 +26,11 @@ public class DevisRepository implements IDevisRepository {
             statement.setDate(3, Date.valueOf(devis.getDateValidite()));
             statement.setBoolean(4, devis.isAccepte());
             statement.setInt(5, devis.getProjectId());
-            statement.executeUpdate();
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     public boolean updateDevis(Devis devis) {
