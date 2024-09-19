@@ -1,6 +1,9 @@
 package model;
 
+import java.sql.ResultSet;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Devis {
     private int id;
@@ -13,6 +16,21 @@ public class Devis {
     public Devis() {
     }
 
+    public Devis(double montantEstime, LocalDate dateEmission, LocalDate dateValidite,int projectId) {
+        this.montantEstime = montantEstime;
+        this.dateEmission = dateEmission;
+        this.dateValidite = dateValidite;
+        this.projectId = projectId;
+    }
+
+    public Devis(double montantEstime, LocalDate dateEmission, LocalDate dateValidite, boolean accepte, int projectId) {
+        this.montantEstime = montantEstime;
+        this.dateEmission = dateEmission;
+        this.dateValidite = dateValidite;
+        this.accepte = accepte;
+        this.projectId = projectId;
+    }
+
     public Devis(int id, double montantEstime, LocalDate dateEmission, LocalDate dateValidite, boolean accepte, int projectId) {
         this.id = id;
         this.montantEstime = montantEstime;
@@ -20,6 +38,26 @@ public class Devis {
         this.dateValidite = dateValidite;
         this.accepte = accepte;
         this.projectId = projectId;
+    }
+
+    public static List<Devis> fromResultSet(ResultSet resultSet) {
+        List<Devis> devis = new ArrayList<>();
+        try {
+            while (resultSet.next()) {
+                Devis devi = new Devis(
+                    resultSet.getInt("id"),
+                    resultSet.getDouble("montant_estime"),
+                    resultSet.getDate("date_emission").toLocalDate(),
+                    resultSet.getDate("date_validite").toLocalDate(),
+                    resultSet.getBoolean("accepte"),
+                    resultSet.getInt("project_id")
+                );
+                devis.add(devi);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return devis;
     }
 
     // Getters and setters
