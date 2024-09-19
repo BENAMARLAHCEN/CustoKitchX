@@ -54,9 +54,7 @@ public class ClientController {
 
     }
 
-
-
-    private void getAllClients() {
+    public void getAllClients() {
         try {
             clientService.getAllClients().forEach(PrintData::printClientData);
         } catch (Exception e) {
