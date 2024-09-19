@@ -15,12 +15,10 @@ public class Project {
     public Project() {
     }
 
-    public Project(int id, String nomProjet, double margeBeneficiaire, double coutTotal, EtatProjet etatProjet) {
-        this.id = id;
+    public Project(String nomProjet, int clientId) {
         this.nomProjet = nomProjet;
-        this.margeBeneficiaire = margeBeneficiaire;
-        this.coutTotal = coutTotal;
-        this.etatProjet = etatProjet;
+        this.etatProjet = EtatProjet.EN_COURS;
+        this.clientId = clientId;
     }
 
     public Project(int id, String nomProjet, double margeBeneficiaire, double coutTotal, EtatProjet etatProjet, int clientId) {
