@@ -11,4 +11,5 @@ public interface IProjectRepository {
     List<Project> getProjects();
     boolean updateProject(Project project);
     boolean deleteProject(int id);
+    boolean applyMargeBeneficiaire(int id, double margeBeneficiaire);
 }
