@@ -6,6 +6,7 @@ import repository.interf.IMaterialRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +68,20 @@ public class MaterialRepository implements IMaterialRepository {
         String query = "SELECT * FROM Materiaux WHERE id = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, id);
-            return Optional.ofNullable(preparedStatement.executeQuery().next() ? new Material() : null);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                Material material = new Material();
+                material.setId(resultSet.getInt("id"));
+                material.setNom(resultSet.getString("nom"));
+                material.setTypeComposant(resultSet.getString("type_composant"));
+                material.setTauxTVA(resultSet.getDouble("taux_tva"));
+                material.setProjetId(resultSet.getInt("projet_id"));
+                material.setCoutUnitaire(resultSet.getDouble("cout_unitaire"));
+                material.setQuantite(resultSet.getDouble("quantite"));
+                material.setCoutTransport(resultSet.getDouble("cout_transport"));
+                material.setCoefficientQualite(resultSet.getDouble("coefficient_qualite"));
+                return Optional.of(material);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -77,7 +91,8 @@ public class MaterialRepository implements IMaterialRepository {
     public Optional<List<Material>> getMaterials() {
         String query = "SELECT * FROM Materiaux";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            return Optional.ofNullable(preparedStatement.executeQuery().next() ? new ArrayList<Material>() : null);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            return Optional.ofNullable(Material.fromResultSet(resultSet));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -88,7 +103,8 @@ public class MaterialRepository implements IMaterialRepository {
         String query = "SELECT * FROM Materiaux WHERE projet_id = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, projectId);
-            return Optional.ofNullable(preparedStatement.executeQuery().next() ? new ArrayList<Material>() : null);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            return Optional.ofNullable(Material.fromResultSet(resultSet));
         } catch (SQLException e) {
             e.printStackTrace();
         }
