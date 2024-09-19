@@ -1,5 +1,10 @@
 package model;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Workforce extends Component {
     private double tauxHoraire;
     private double heuresTravail;
@@ -8,11 +13,33 @@ public class Workforce extends Component {
     public Workforce() {
     }
 
-    public Workforce(int id, String nom, double coutUnitaire, double quantite, String typeComposant, double tauxTVA, int projetId, double tauxHoraire, double heuresTravail, double productiviteOuvrier) {
-        super(id, nom, coutUnitaire, quantite, typeComposant, tauxTVA, projetId);
+    public Workforce(int id, String nom, double tauxTVA, int projetId, double tauxHoraire, double heuresTravail, double productiviteOuvrier) {
+        super(id, nom, "Workforce", tauxTVA, projetId);
         this.tauxHoraire = tauxHoraire;
         this.heuresTravail = heuresTravail;
         this.productiviteOuvrier = productiviteOuvrier;
+    }
+
+    public static List<Workforce> fromResultSet(ResultSet resultSet) throws SQLException {
+        List<Workforce> workforces = new ArrayList<>();
+        try {
+            while (resultSet.next()) {
+                Workforce workforce = new Workforce();
+                workforce.setId(resultSet.getInt("id"));
+                workforce.setNom(resultSet.getString("nom"));
+                workforce.setTypeComposant(resultSet.getString("type_composant"));
+                workforce.setTauxTVA(resultSet.getDouble("taux_TVA"));
+                workforce.setProjetId(resultSet.getInt("projet_id"));
+                workforce.setTauxHoraire(resultSet.getDouble("taux_horaire"));
+                workforce.setHeuresTravail(resultSet.getDouble("heures_travail"));
+                workforce.setProductiviteOuvrier(resultSet.getDouble("productivite_ouvrier"));
+                workforces.add(workforce);
+            }
+            return workforces;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     // Getters and setters
