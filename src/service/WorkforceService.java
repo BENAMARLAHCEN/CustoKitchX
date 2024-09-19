@@ -4,15 +4,17 @@ import model.Workforce;
 import repository.interf.IWorkforceRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public class WorkforceService {
     private final IWorkforceRepository workforceRepository;
 
-    public WorkforceService(IWorkforceRepository workforceRepository) {
-        this.workforceRepository = workforceRepository;
+    public WorkforceService() {
+        this.workforceRepository = new repository.WorkforceRepository();
     }
 
-    public boolean addWorkforce(Workforce workforce) {
+    public boolean addWorkforce(String nom, double tauxHoraire, double heuresTravail, double productiviteOuvrier, int projetId) {
+        Workforce workforce = new Workforce(nom, tauxHoraire, heuresTravail, productiviteOuvrier, projetId);
         return workforceRepository.addWorkforce(workforce);
     }
 
@@ -32,7 +34,7 @@ public class WorkforceService {
         return workforceRepository.getWorkforces().orElse(null);
     }
 
-    public List<Workforce> getWorkforcesByProject(int projectId) {
-        return workforceRepository.getWorkforcesByProject(projectId).orElse(null);
+    public Optional<List<Workforce>> getWorkforcesByProject(int projectId) {
+        return workforceRepository.getWorkforcesByProject(projectId);
     }
 }
