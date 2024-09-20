@@ -11,10 +11,10 @@ public abstract class Component {
     public Component() {
     }
 
-    public Component(String nom, String typeComposant, double tauxTVA) {
+    public Component(String nom, String typeComposant, int projetId) {
         this.nom = nom;
         this.typeComposant = typeComposant;
-        this.tauxTVA = tauxTVA;
+        this.projetId = projetId;
     }
 
     public Component(String nom, String typeComposant, double tauxTVA, int projetId) {
