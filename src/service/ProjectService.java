@@ -70,4 +70,9 @@ public class ProjectService {
         Devis devis = new Devis(montantEstime, dateEmission, dateValidite, accepte, projectId);
         return devisRepository.createDevis(devis);
     }
+
+    public Devis getDevisByProjectId(int id) {
+        Optional<Devis> devis = devisRepository.getDevisByProjectId(id);
+        return devis.orElse(null);
+    }
 }

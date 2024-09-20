@@ -1,6 +1,7 @@
 package controller;
 
 import model.Client;
+import model.Devis;
 import model.Project;
 import service.*;
 
@@ -25,90 +26,6 @@ public class ProjectController {
         this.scanner = new Scanner(System.in);
     }
 
-    /*
-    Exemple d ’utilisation:
-=== Bienvenue dans l'application de gestion des projets de rénovation de cuisines ===
-=== Menu Principal ===
-1. Créer un nouveau projet
-2. Afficher les projets existants
-3. Calculer le coût d'un projet
-4. Quitter
-Choisissez une option : 1
---- Recherche de client ---
-Souhaitez-vous chercher un client existant ou en ajouter un nouveau ?
-1. Chercher un client existant
-2. Ajouter un nouveau client
-Choisissez une option : 1
---- Recherche de client existant ---
-Entrez le nom du client : Mme Dupont
-Client trouvé !
-Nom : Mme Dupont
-Adresse : 12 Rue des Fleurs, Paris
-Numéro de téléphone : 06 12345678
-Souhaitez-vous continuer avec ce client ? (y/n) : y
---- Création d'un Nouveau Projet ---
-Entrez le nom du projet : Rénovation Cuisine Mme Dupont
-Entrez la surface de la cuisine (en m²) : 20
---- Ajout des matériaux ---
-Entrez le nom du matériau : Carrelage
-Entrez la quantité de ce matériau (en m²) : 20
-Entrez le coût unitaire de ce matériau (€/m²) : 30
-Entrez le coût de transport de ce matériau (€) : 50
-Entrez le coefficient de qualité du matériau (1.0 = standard, > 1.0 = haute qualité) : 1.1
-Matériau ajouté avec succès !
-Voulez-vous ajouter un autre matériau ? (y/n) : y
-Entrez le nom du matériau : Peinture
-Entrez la quantité de ce matériau (en litres) : 10
-Entrez le coût unitaire de ce matériau (€/litre) : 15
-Entrez le coût de transport de ce matériau (€) : 20
-Entrez le coefficient de qualité du matériau (1.0 = standard, > 1.0 = haute qualité) : 1.0
-Matériau ajouté avec succès !
-Voulez-vous ajouter un autre matériau ? (y/n) : n
---- Ajout de la main-d'œuvre ---
-Entrez le type de main-d'œuvre (e.g., Ouvrier de base, Spécialiste) : Ouvrier de base
-Entrez le taux horaire de cette main-d'œuvre (€/h) : 20
-Entrez le nombre d'heures travaillées : 40
-Entrez le facteur de productivité (1.0 = standard, > 1.0 = haute productivité) : 1.0
-Main-d'œuvre ajoutée avec succès !
-Voulez-vous ajouter un autre type de main-d'œuvre ? (y/n) : y
-Entrez le type de main-d'œuvre (e.g., Ouvrier de base, Spécialiste) : Ouvrier spécialisé
-Entrez le taux horaire de cette main-d'œuvre (€/h) : 35
-Entrez le nombre d'heures travaillées : 20
-Entrez le facteur de productivité (1.0 = standard, > 1.0 = haute productivité) : 1.1
-Main-d'œuvre ajoutée avec succès !
-Voulez-vous ajouter un autre type de main-d'œuvre ? (y/n) : n
---- Calcul du coût total ---
-Souhaitez-vous appliquer une TVA au projet ? (y/n) : y
-Entrez le pourcentage de TVA (%) : 20
-Souhaitez-vous appliquer une marge bénéficiaire au projet ? (y/n) : y
-Entrez le pourcentage de marge bénéficiaire (%) : 15
-Calcul du coût en cours...
---- Résultat du Calcul ---
-Nom du projet : Rénovation Cuisine Mme Dupont
-Client : Mme Dupont
-Adresse du chantier : 12 Rue des Fleurs, Paris
-Surface : 20 m²
---- Détail des Coûts ---
-1. Matériaux :
-- Carrelage : 710.00 € (quantité : 20 m², coût unitaire : 30 €/m², qualité : 1.1, transport : 50 €)
-- Peinture : 170.00 € (quantité : 10 litres, coût unitaire : 15 €/litre, transport : 20 €)
-**Coût total des matériaux avant TVA : 880.00 €**
-**Coût total des matériaux avec TVA (20%) : 1 056.00 €**
-2. Main-d'œuvre :
-- Ouvrier de base : 800.00 € (taux horaire : 20 €/h, heures travaillées : 40 h, productivité : 1.0)
-- Ouvrier spécialisé : 770.00 € (taux horaire : 35 €/h, heures travaillées : 20 h, productivité : 1.1)
-**Coût total de la main-d'œuvre avant TVA : 1 570.00 €**
-**Coût total de la main-d'œuvre avec TVA (20%) : 1 884.00 €**
-3. Coût total avant marge : 2 940.00 €
-4. Marge bénéficiaire (15%) : 441.00 €
-**Coût total final du projet : 3 381.00 €**
---- Enregistrement du Devis ---
-Entrez la date d'émission du devis (format : jj/mm/aaaa) : 10/09/2024
-Entrez la date de validité du devis (format : jj/mm/aaaa) : 10/10/2024
-Souhaitez-vous enregistrer le devis ? (y/n) : y
-Devis enregistré avec succès !
-
-     */
     public void ProjectsMenu() {
         System.out.println("=== Bienvenue dans l'application de gestion des projets de rénovation de cuisines ===");
         System.out.println("=== Menu Principal ===");
@@ -117,9 +34,16 @@ Devis enregistré avec succès !
         System.out.println("3. Calculer le coût d'un projet");
         System.out.println("4. Quitter");
         boolean exit = false;
+        int choice = 0;
         do {
             System.out.print("Choisissez une option : ");
-            int choice = scanner.nextInt();
+            try {
+                choice = scanner.nextInt();
+            } catch (Exception e) {
+                System.out.println("Veuillez entrer un nombre valide.");
+                scanner.next();
+                continue;
+            }
             switch (choice) {
                 case 1:
                     createProject();
@@ -212,16 +136,30 @@ Devis enregistré avec succès !
         System.out.println("--- Ajout des matériaux ---");
         do {
             System.out.print("Entrez le nom du matériau : ");
-            scanner.nextLine();
             String nomMateriau = scanner.nextLine();
+            scanner.nextLine();
             System.out.print("Entrez la quantité de ce matériau (en m²) : ");
             double quantite = scanner.nextDouble();
             System.out.print("Entrez le coût unitaire de ce matériau (€/m²) : ");
             double coutUnitaire = scanner.nextDouble();
             System.out.print("Entrez le coût de transport de ce matériau (€) : ");
             double coutTransport = scanner.nextDouble();
-            System.out.print("Entrez le coefficient de qualité du matériau (1.0 = standard, > 1.0 = haute qualité) : ");
-            double coefficientQualite = scanner.nextDouble();
+            double coefficientQualite = 0;
+            do {
+                System.out.print("Entrez le coefficient de qualité du matériau (1.0 = standard, > 1.0 = haute qualité) : ");
+                try {
+                    coefficientQualite = scanner.nextDouble();
+                } catch (Exception e) {
+                    System.out.println("Veuillez entrer un nombre valide.");
+                    scanner.next();
+                    continue;
+                }
+                if (coefficientQualite < 1.0) {
+                    System.out.println("Le coefficient de qualité doit être supérieur ou égal à 1.0.");
+                } else {
+                    break;
+                }
+            } while (true);
             materialService.addMaterial(nomMateriau, coutUnitaire, quantite, coutTransport, coefficientQualite, project.getId());
             System.out.println("Matériau ajouté avec succès !");
             System.out.print("Voulez-vous ajouter un autre matériau ? (y/n) : ");
@@ -235,8 +173,23 @@ Devis enregistré avec succès !
             double tauxHoraire = scanner.nextDouble();
             System.out.print("Entrez le nombre d'heures travaillées : ");
             double heuresTravaillees = scanner.nextDouble();
-            System.out.print("Entrez le facteur de productivité (1.0 = standard, > 1.0 = haute productivité) : ");
-            double facteurProductivite = scanner.nextDouble();
+            double facteurProductivite;
+            do {
+                System.out.print("Entrez le facteur de productivité (1.0 = standard, > 1.0 = haute productivité) : ");
+                try {
+                facteurProductivite = scanner.nextDouble();
+                } catch (Exception e) {
+                    System.out.println("Veuillez entrer un nombre valide.");
+                    scanner.next();
+                    continue;
+                }
+                if (facteurProductivite < 1.0) {
+                    System.out.println("Le facteur de productivité doit être supérieur ou égal à 1.0.");
+                } else {
+                    break;
+                }
+            } while (true);
+
             boolean success = workforceService.addWorkforce(type, tauxHoraire, heuresTravaillees, facteurProductivite, project.getId());
             if (success) {
                 System.out.println("Main-d'œuvre ajoutée avec succès !");
@@ -287,14 +240,16 @@ Devis enregistré avec succès !
         LocalDate dateValidite = LocalDate.parse(scanner.nextLine());
         System.out.print("Souhaitez-vous enregistrer le devis ? (y/n) : ");
         if (scanner.next().equalsIgnoreCase("y")) {
+            double montantEstime = coutTotal * (1 + margeBeneficiaire / 100);
             System.out.println("Shoisir devis accepté ou non (y/n) : ");
             boolean devisAccepte ;
             if (scanner.next().equalsIgnoreCase("y")) {
                 devisAccepte = true;
+                montantEstime = montantEstime * (1 + client.getRemise() / 100);
             } else {
                 devisAccepte = false;
             }
-            boolean success = projectService.createDevis(coutTotal * (1 + margeBeneficiaire / 100), dateEmission, dateValidite, devisAccepte, project.getId());
+            boolean success = projectService.createDevis(montantEstime, dateEmission, dateValidite, devisAccepte, project.getId());
             if (success) {
                 System.out.println("Devis enregistré avec succès !");
             } else {
@@ -309,13 +264,26 @@ Devis enregistré avec succès !
     public void showProjects() {
         System.out.println("--- Liste des Projets ---");
         projectService.getProjects().forEach(project -> {
-            System.out.println("ID : " + project.getId());
-            System.out.println("Nom du Projet : " + project.getNomProjet());
-            System.out.println("Client : " + clientService.getClientById(project.getClientId()).get().getNom());
-            System.out.println("Coût Total : " + project.getCoutTotal() + " €");
-            System.out.println("État du Projet : " + project.getEtatProjet());
-            System.out.println();
+            System.out.println("====================================");
+            showProjectDetails(project.getId());
+            System.out.println("------------------------------------");
+            showDevisDetails(project.getId());
+            System.out.println("------------------------------------");
+            System.out.println("====================================");
         });
+    }
+
+    public void showDevisDetails(int id) {
+        Optional<Devis> devis = Optional.ofNullable(projectService.getDevisByProjectId(id));
+        if (devis.isPresent()) {
+            System.out.println("--- Détail du Devis ---");
+            System.out.println("Montant estimé : " + devis.get().getMontantEstime() + " €");
+            System.out.println("Date d'émission : " + devis.get().getDateEmission());
+            System.out.println("Date de validité : " + devis.get().getDateValidite());
+            System.out.println("Devis accepté : " + devis.get().isAccepte());
+        } else {
+            System.out.println("Devis introuvable.");
+        }
     }
 
     public void showProjectDetails(int id) {
@@ -356,4 +324,6 @@ Devis enregistré avec succès !
             System.out.println("Projet introuvable.");
         }
     }
+
+
 }
