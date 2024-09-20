@@ -14,7 +14,7 @@ public class ComponentRepository implements IComponentRepository {
     }
 
     public boolean applyTVA(int projectId, double tva) {
-        String sql = "UPDATE components SET tva = ? WHERE projet_id = ?";
+        String sql = "UPDATE components SET taux_tva = ? WHERE projet_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setDouble(1, tva);
             statement.setInt(2, projectId);

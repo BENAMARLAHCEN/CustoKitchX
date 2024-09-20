@@ -50,7 +50,7 @@ public class Devis {
                     resultSet.getDate("date_emission").toLocalDate(),
                     resultSet.getDate("date_validite").toLocalDate(),
                     resultSet.getBoolean("accepte"),
-                    resultSet.getInt("project_id")
+                    resultSet.getInt("projet_id")
                 );
                 devis.add(devi);
             }

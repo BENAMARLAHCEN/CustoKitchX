@@ -19,7 +19,7 @@ public class DevisRepository implements IDevisRepository {
 
     public boolean createDevis(Devis devis) {
         try {
-            String query = "INSERT INTO devis (montant_estime, date_emission, date_validite, accepte, project_id) VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO devis (montant_estime, date_emission, date_validite, accepte, projet_id) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setDouble(1, devis.getMontantEstime());
             statement.setDate(2, Date.valueOf(devis.getDateEmission()));
@@ -35,7 +35,7 @@ public class DevisRepository implements IDevisRepository {
 
     public boolean updateDevis(Devis devis) {
         try {
-            String query = "UPDATE devis SET montant_estime = ?, date_emission = ?, date_validite = ?, accepte = ?, project_id = ? WHERE id = ?";
+            String query = "UPDATE devis SET montant_estime = ?, date_emission = ?, date_validite = ?, accepte = ?, projet_id = ? WHERE id = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setDouble(1, devis.getMontantEstime());
             statement.setDate(2, Date.valueOf(devis.getDateEmission()));
@@ -75,7 +75,7 @@ public class DevisRepository implements IDevisRepository {
     }
 
     public Optional<Devis> getDevisByProjectId(int projectId) {
-        String query = "SELECT * FROM devis WHERE project_id = ?";
+        String query = "SELECT * FROM devis WHERE projet_id = ?";
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, projectId);
