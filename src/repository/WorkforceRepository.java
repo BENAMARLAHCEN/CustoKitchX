@@ -18,7 +18,7 @@ public class WorkforceRepository implements IWorkforceRepository {
     }
 
     public boolean addWorkforce(Workforce workforce) {
-        String query = "INSERT INTO Materiaux (nom, type_composant, taux_horaire, heures_travail,productivite_ouvrier, projet_id) VALUES (?, 'Workforce', ?, ?, ?, ?)";
+        String query = "INSERT INTO workforces (nom, type_composant, taux_horaire, heures_travail,productivite_ouvrier, projet_id) VALUES (?, 'Workforce', ?, ?, ?, ?)";
         try(PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, workforce.getNom());
             preparedStatement.setDouble(2, workforce.getTauxHoraire());
@@ -33,7 +33,7 @@ public class WorkforceRepository implements IWorkforceRepository {
     }
 
     public boolean updateWorkforce(Workforce workforce) {
-        String query = "UPDATE Materiaux SET nom = ?, taux_horaire = ?, heures_travail = ?, productivite_ouvrier = ?,taux_tva = ? WHERE id = ?";
+        String query = "UPDATE workforces SET nom = ?, taux_horaire = ?, heures_travail = ?, productivite_ouvrier = ?,taux_tva = ? WHERE id = ?";
         try(PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, workforce.getNom());
             preparedStatement.setDouble(2, workforce.getTauxHoraire());
@@ -48,7 +48,7 @@ public class WorkforceRepository implements IWorkforceRepository {
     }
 
     public boolean deleteWorkforce(int id) {
-        String query = "DELETE FROM Materiaux WHERE id = ?";
+        String query = "DELETE FROM workforces WHERE id = ?";
         try(PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, id);
             return preparedStatement.executeUpdate() > 0;
@@ -59,7 +59,7 @@ public class WorkforceRepository implements IWorkforceRepository {
     }
 
     public Optional<Workforce> getWorkforce(int id) {
-        String query = "SELECT * FROM Materiaux WHERE id = ?";
+        String query = "SELECT * FROM workforces WHERE id = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -81,7 +81,7 @@ public class WorkforceRepository implements IWorkforceRepository {
     }
 
     public Optional<List<Workforce>> getWorkforces() {
-        String query = "SELECT * FROM Materiaux";
+        String query = "SELECT * FROM workforces";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             return Optional.ofNullable(Workforce.fromResultSet(resultSet));
@@ -92,7 +92,7 @@ public class WorkforceRepository implements IWorkforceRepository {
     }
 
     public Optional<List<Workforce>> getWorkforcesByProject(int projectId) {
-        String query = "SELECT * FROM Materiaux WHERE projet_id = ?";
+        String query = "SELECT * FROM workforces WHERE projet_id = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, projectId);
             ResultSet resultSet = preparedStatement.executeQuery();

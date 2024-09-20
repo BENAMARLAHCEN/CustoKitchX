@@ -26,7 +26,7 @@ public class ProjectRepository implements IProjectRepository {
             statement.setInt(3, project.getClientId());
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                project.setId(resultSet.getInt(1));
+                project.setId(resultSet.getInt("id"));
                 return project;
             }
         } catch (Exception e) {
@@ -70,7 +70,7 @@ public class ProjectRepository implements IProjectRepository {
     }
 
     public boolean updateProject(Project project) {
-        String sql = "UPDATE projects SET nom_projet = ?, marge_beneficiaire = ?, cout_total = ?, etat_projet = ?::etat_project, client_id = ? WHERE id = ?";
+        String sql = "UPDATE projects SET nom_projet = ?, marge_beneficiaire = ?, cout_total = ?, etat_projet = ?::etat_projet, client_id = ? WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, project.getNomProjet());
             statement.setDouble(2, project.getMargeBeneficiaire());
