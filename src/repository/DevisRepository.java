@@ -17,21 +17,22 @@ public class DevisRepository implements IDevisRepository {
         this.connection = DatabaseConnection.getInstance().getConnection();
     }
 
-    public boolean createDevis(Devis devis) {
-        try {
-            String query = "INSERT INTO devis (montant_estime, date_emission, date_validite, accepte, projet_id) VALUES (?, ?, ?, ?, ?)";
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setDouble(1, devis.getMontantEstime());
-            statement.setDate(2, Date.valueOf(devis.getDateEmission()));
-            statement.setDate(3, Date.valueOf(devis.getDateValidite()));
-            statement.setBoolean(4, devis.isAccepte());
-            statement.setInt(5, devis.getProjectId());
-            return statement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
+// DevisRepository.java
+public boolean createDevis(Devis devis) {
+    try {
+        String query = "INSERT INTO devis (montant_estime, date_emission, date_validite, accepte, projet_id) VALUES (?, ?, ?, ?, ?)";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setDouble(1, devis.getMontantEstime());
+        statement.setDate(2, devis.getDateEmission() != null ? Date.valueOf(devis.getDateEmission()) : null);
+        statement.setDate(3, devis.getDateValidite() != null ? Date.valueOf(devis.getDateValidite()) : null);
+        statement.setBoolean(4, devis.isAccepte());
+        statement.setInt(5, devis.getProjectId());
+        return statement.executeUpdate() > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+    return false;
+}
 
     public boolean updateDevis(Devis devis) {
         try {

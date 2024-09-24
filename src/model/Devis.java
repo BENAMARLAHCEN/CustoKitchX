@@ -41,24 +41,35 @@ public class Devis {
     }
 
     public static List<Devis> fromResultSet(ResultSet resultSet) {
-        List<Devis> devis = new ArrayList<>();
-        try {
-            while (resultSet.next()) {
-                Devis devi = new Devis(
-                    resultSet.getInt("id"),
-                    resultSet.getDouble("montant_estime"),
-                    resultSet.getDate("date_emission").toLocalDate(),
-                    resultSet.getDate("date_validite").toLocalDate(),
-                    resultSet.getBoolean("accepte"),
-                    resultSet.getInt("projet_id")
-                );
-                devis.add(devi);
+    List<Devis> devis = new ArrayList<>();
+    try {
+        while (resultSet.next()) {
+            LocalDate dateEmission = null;
+            LocalDate dateValidite = null;
+
+            if (resultSet.getDate("date_emission") != null) {
+                dateEmission = resultSet.getDate("date_emission").toLocalDate();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            if (resultSet.getDate("date_validite") != null) {
+                dateValidite = resultSet.getDate("date_validite").toLocalDate();
+            }
+
+            Devis devi = new Devis(
+                resultSet.getInt("id"),
+                resultSet.getDouble("montant_estime"),
+                dateEmission,
+                dateValidite,
+                resultSet.getBoolean("accepte"),
+                resultSet.getInt("projet_id")
+            );
+            devis.add(devi);
         }
-        return devis;
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+    return devis;
+}
 
     // Getters and setters
 

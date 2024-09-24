@@ -22,6 +22,7 @@ public class ProjectController {
     private final WorkforceService workforceService;
     private final ClientService clientService;
     private final ComponentService componentService;
+    private final DevisService devisService;
     private final Scanner scanner;
 
     public ProjectController() {
@@ -31,6 +32,7 @@ public class ProjectController {
         this.clientService = new ClientService();
         this.componentService = new ComponentService();
         this.scanner = new Scanner(System.in);
+        this.devisService = new DevisService();
     }
 
     public void ProjectsMenu() {
@@ -94,31 +96,32 @@ public class ProjectController {
                     System.out.println("Devis déjà accepté ou refusé.");
                 }
                 else {
-                if (InputValidate.getValidateBoolean("Voulez-vous modifier Tva ? (y/n) : ")){
+                if (InputValidate.getValidateName("Voulez-vous modifier Tva ? (y/n) : ").equalsIgnoreCase("y")){
                    double TVA = InputValidate.getValidateDouble("Entrez le nouveau taux de TVA : ");
                    if (componentService.applyTVA(id, TVA)) {
                        System.out.println("TVA modifiée avec succès.");
                    }
                 }
-                 if (InputValidate.getValidateBoolean("Voulez-vous modifier la marge bénéficiaire ? (y/n) : ")) {
+                 if (InputValidate.getValidateName("Voulez-vous modifier la marge bénéficiaire ? (y/n) : ").equalsIgnoreCase("y")){
                     double margeBeneficiaire = InputValidate.getValidateDouble("Entrez le nouveau pourcentage de marge bénéficiaire : ");
                     if (projectService.applyMargeBeneficiaire(id, margeBeneficiaire)) {
+                        project.get().setMargeBeneficiaire(margeBeneficiaire);
                         System.out.println("Marge bénéficiaire modifiée avec succès.");
                     }
                  }
 
                  double totalCost = projectService.calculateProjectCost(id);
                     project.get().setCoutTotal(totalCost);
-                    if (InputValidate.getValidateBoolean("Voulez-vous accepter le devis ? (y/n) : ")) {
+                    if (InputValidate.getValidateName("Voulez-vous accepter le devis ? (y/n) : ").equalsIgnoreCase("y")) {
                         devis.setAccepte(true);
                         devis.setDateValidite(InputValidate.getValidateDate("Entrez la date de validité du devis (format : yyyy-mm-dd) : "));
                     }
-                    Devis newDevis = new Devis(devis.getId(),totalCost,LocalDate.now(),devis.getDateValidite(),devis.isAccepte(),devis.getProjectId());
+                    Devis newDevis = new Devis(devis.getId(),totalCost*(1 +project.get().getMargeBeneficiaire()/100),LocalDate.now(),devis.getDateValidite(),devis.isAccepte(),devis.getProjectId());
                     PrintData.printDevisData(newDevis);
                     System.out.print("Souhaitez-vous enregistrer les modifications ? (y/n) : ");
                     if (scanner.next().equalsIgnoreCase("y")) {
                         projectService.updateProject(project.get());
-                        projectService.createDevis(totalCost,LocalDate.now(),devis.getDateValidite(),devis.isAccepte(),id);
+                        devisService.createDevis(newDevis);
                         System.out.println("Nouveau devis enregistré avec succès.");
                     } else {
                         System.out.println("Opération annulée.");
