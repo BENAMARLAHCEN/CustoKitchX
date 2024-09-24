@@ -2,6 +2,7 @@ package controller;
 
 import model.Client;
 import service.ClientService;
+import util.InputValidate;
 import util.PrintData;
 
 import java.util.Optional;
@@ -12,22 +13,31 @@ public class ClientController {
 
     private final Scanner scanner ;
 
+    private static final String RESET = "\u001B[0m";
+    private static final String BLUE_BOLD = "\u001B[1;34m";
+    private static final String GREEN_BOLD = "\u001B[1;32m";
+    private static final String RED_BOLD = "\u001B[1;31m";
+
     public ClientController() {
         this.clientService = new ClientService();
         this.scanner = new Scanner(System.in);
     }
 
     public void CientsMenu() {
-        System.out.println("1. Create a new client");
-        System.out.println("2. Update a client");
-        System.out.println("3. Delete a client");
-        System.out.println("4. Get a client by id");
-        System.out.println("5. Get all clients");
-        System.out.println("0. Exit");
+        System.out.println(BLUE_BOLD + "╔════════════════════════════════════════╗" + RESET);
+        System.out.println(BLUE_BOLD + "║         === Menu Principal ===         ║" + RESET);
+        System.out.println(BLUE_BOLD + "╚════════════════════════════════════════╝" + RESET);
+        System.out.println(GREEN_BOLD + "╔════════════════════════════════════════╗" + RESET);
+        System.out.println(GREEN_BOLD + "║ 1. Create a new client                 ║" + RESET);
+        System.out.println(GREEN_BOLD + "║ 2. Update a client                     ║" + RESET);
+        System.out.println(GREEN_BOLD + "║ 3. Delete a client                     ║" + RESET);
+        System.out.println(GREEN_BOLD + "║ 4. Get a client by id                  ║" + RESET);
+        System.out.println(GREEN_BOLD + "║ 5. Get all clients                     ║" + RESET);
+        System.out.println(RED_BOLD + "║ 0. Exit                                ║" + RESET);
+        System.out.println(GREEN_BOLD + "╚════════════════════════════════════════╝" + RESET);
         boolean exit = false;
         do {
-            System.out.print("Enter your choice: ");
-            int choice = scanner.nextInt();
+            int choice = InputValidate.getValidateInt("Enter your choice: ");
             switch (choice) {
                 case 1:
                     createClient();
@@ -63,17 +73,13 @@ public class ClientController {
     }
 
     public void createClient() {
-        System.out.print("Enter client name: ");
-        scanner.nextLine();
-        String nom = scanner.nextLine();
+        String nom = InputValidate.getValidateName("Enter client name: ");
         System.out.print("Enter client address: ");
         String adresse = scanner.nextLine();
         System.out.print("Enter client phone number: ");
         String telephone = scanner.nextLine();
-        System.out.print("Is the client a professional? (true/false): ");
-        boolean estProfessionnel = scanner.nextBoolean();
-        System.out.print("Enter client discount: ");
-        double remise = scanner.nextDouble();
+        boolean estProfessionnel= InputValidate.getValidateBoolean("Is the client a professional? (true/false): ");
+        double remise = InputValidate.getValidateRemise("Enter client discount: ");
         try {
             clientService.createClient(nom, adresse, telephone, estProfessionnel, remise);
         } catch (Exception e) {
@@ -83,18 +89,14 @@ public class ClientController {
     }
 
     public void updateClient() {
-        System.out.print("Enter client id: ");
-        int id = scanner.nextInt();
-        System.out.print("Enter client name: ");
-        String nom = scanner.nextLine();
+        int id = InputValidate.getValidateInt("Enter client id: ");
+        String nom = InputValidate.getValidateName("Enter client name: ");
         System.out.print("Enter client address: ");
         String adresse = scanner.nextLine();
         System.out.print("Enter client phone number: ");
         String telephone = scanner.nextLine();
-        System.out.print("Is the client a professional? (true/false): ");
-        boolean estProfessionnel = scanner.nextBoolean();
-        System.out.print("Enter client discount: ");
-        double remise = scanner.nextDouble();
+        boolean estProfessionnel= InputValidate.getValidateBoolean("Is the client a professional? (true/false): ");
+        double remise = InputValidate.getValidateRemise("Enter client discount: ");
         try {
             clientService.updateClient(id, nom, adresse, telephone, estProfessionnel, remise);
         } catch (Exception e) {
@@ -104,8 +106,7 @@ public class ClientController {
     }
 
     public void deleteClient() {
-        System.out.print("Enter client id: ");
-        int id = scanner.nextInt();
+        int id = InputValidate.getValidateInt("Enter client id: ");
         try {
             clientService.deleteClient(id);
         } catch (Exception e) {
@@ -115,8 +116,7 @@ public class ClientController {
     }
 
     public void getClientById() {
-        System.out.print("Enter client id: ");
-        int id = scanner.nextInt();
+        int id = InputValidate.getValidateInt("Enter client id: ");
         try {
             Optional<Client> client = clientService.getClientById(id);
             client.ifPresentOrElse((c) -> PrintData.printClientData(c), () -> System.out.println("Client not found"));

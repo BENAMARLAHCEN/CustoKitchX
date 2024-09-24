@@ -1,9 +1,6 @@
 package util;
 
-import model.Client;
-import model.Material;
-import model.Project;
-import model.Workforce;
+import model.*;
 
 import java.util.List;
 
@@ -86,5 +83,14 @@ public class PrintData {
     }
 
 
-
+    public static void printDevisData(Devis devis) {
+        System.out.println("====================================");
+        System.out.println("ID: " + devis.getId());
+        System.out.println("Montant estimé: " + devis.getMontantEstime());
+        System.out.println("Date émission: " + devis.getDateEmission());
+        System.out.println("Date validité: " + devis.getDateValidite());
+        System.out.println("Accepté: " + devis.isAccepte());
+        System.out.println("Projet ID: " + devis.getProjectId());
+        System.out.println("====================================");
+    }
 }

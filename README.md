@@ -171,7 +171,7 @@ Build the project from source:
 
 1. Clone the CustoKitchX repository:
 ```sh
-❯ git clone https://github.com/BENAMARLAHCEN/CustoKitchX
+❯ git clone https://github.com/BENAMARLAHCEN/CustoKitchX.git
 ```
 
 2. Navigate to the project directory:

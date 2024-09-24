@@ -4,12 +4,19 @@ import model.Client;
 import model.Devis;
 import model.Project;
 import service.*;
+import util.InputValidate;
+import util.PrintData;
 
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Scanner;
 
 public class ProjectController {
+    private static final String RESET = "\u001B[0m";
+    private static final String BLUE_BOLD = "\u001B[1;34m";
+    private static final String GREEN_BOLD = "\u001B[1;32m";
+    private static final String RED_BOLD = "\u001B[1;31m";
+
     private final ProjectService projectService;
     private final MaterialService materialService;
     private final WorkforceService workforceService;
@@ -27,12 +34,18 @@ public class ProjectController {
     }
 
     public void ProjectsMenu() {
-        System.out.println("=== Bienvenue dans l'application de gestion des projets de rénovation de cuisines ===");
-        System.out.println("=== Menu Principal ===");
-        System.out.println("1. Créer un nouveau projet");
-        System.out.println("2. Afficher les projets existants");
-        System.out.println("3. Calculer le coût d'un projet");
-        System.out.println("4. Quitter");
+        System.out.println(BLUE_BOLD + "╔═════════════════════════════════════════════════════════════════════════════════════╗" + RESET);
+        System.out.println(BLUE_BOLD + "║=== Bienvenue dans l'application de gestion des projets de rénovation de cuisines ===║" + RESET);
+        System.out.println(BLUE_BOLD + "╚═════════════════════════════════════════════════════════════════════════════════════╝" + RESET);
+        System.out.println(BLUE_BOLD + "╔═════════════════════════════════════════════════════════════════════════════════════╗" + RESET);
+        System.out.println(BLUE_BOLD + "║                              === Menu Principal ===                                 ║" + RESET);
+        System.out.println(BLUE_BOLD + "╚═════════════════════════════════════════════════════════════════════════════════════╝" + RESET);
+        System.out.println(GREEN_BOLD + "╔════════════════════════════════════════════════════════════════════════════════════╗" + RESET);
+        System.out.println(GREEN_BOLD + "║ 1. Créer un nouveau projet                                                         ║" + RESET);
+        System.out.println(GREEN_BOLD + "║ 2. Afficher les projets existants                                                  ║" + RESET);
+        System.out.println(GREEN_BOLD + "║ 3. Calculer le coût d'un projet                                                    ║" + RESET);
+        System.out.println(RED_BOLD + "║ 4. Quitter                                                                         ║" + RESET);
+        System.out.println(GREEN_BOLD + "╚════════════════════════════════════════════════════════════════════════════════════╝" + RESET);
         boolean exit = false;
         int choice = 0;
         do {
@@ -52,9 +65,9 @@ public class ProjectController {
                     showProjects();
                     break;
                 case 3:
-                    System.out.print("Entrez l'ID du projet : ");
-                    int id = scanner.nextInt();
+                    int id = InputValidate.getValidateInt("Entrez l'ID du projet : ");
                     showProjectDetails(id);
+                    updateProjectDevis(id);
                     break;
                 case 4:
                     exit = true;
@@ -65,56 +78,97 @@ public class ProjectController {
         } while (!exit);
     }
 
+    private void updateProjectDevis(int id) {
+        Optional<Project> project = Optional.ofNullable(projectService.getProject(id));
+        if (project.isPresent()) {
+            Devis devis = projectService.getDevisByProjectId(id);
+            if (devis != null){
+                PrintData.printDevisData(devis);
+            }else {
+                System.out.println("Devis introuvable.");
+            }
+            System.out.println("--- Mise à jour du Devis ---");
+            System.out.print("Souhaitez-vous mettre à jour le devis ? (y/n) : ");
+            if (scanner.next().equalsIgnoreCase("y")) {
+                if (devis.isAccepte()){
+                    System.out.println("Devis déjà accepté ou refusé.");
+                }
+                else {
+                if (InputValidate.getValidateBoolean("Voulez-vous modifier Tva ? (y/n) : ")){
+                   double TVA = InputValidate.getValidateDouble("Entrez le nouveau taux de TVA : ");
+                   if (componentService.applyTVA(id, TVA)) {
+                       System.out.println("TVA modifiée avec succès.");
+                   }
+                }
+                 if (InputValidate.getValidateBoolean("Voulez-vous modifier la marge bénéficiaire ? (y/n) : ")) {
+                    double margeBeneficiaire = InputValidate.getValidateDouble("Entrez le nouveau pourcentage de marge bénéficiaire : ");
+                    if (projectService.applyMargeBeneficiaire(id, margeBeneficiaire)) {
+                        System.out.println("Marge bénéficiaire modifiée avec succès.");
+                    }
+                 }
+
+                 double totalCost = projectService.calculateProjectCost(id);
+                    project.get().setCoutTotal(totalCost);
+                    if (InputValidate.getValidateBoolean("Voulez-vous accepter le devis ? (y/n) : ")) {
+                        devis.setAccepte(true);
+                        devis.setDateValidite(InputValidate.getValidateDate("Entrez la date de validité du devis (format : yyyy-mm-dd) : "));
+                    }
+                    Devis newDevis = new Devis(devis.getId(),totalCost,LocalDate.now(),devis.getDateValidite(),devis.isAccepte(),devis.getProjectId());
+                    PrintData.printDevisData(newDevis);
+                    System.out.print("Souhaitez-vous enregistrer les modifications ? (y/n) : ");
+                    if (scanner.next().equalsIgnoreCase("y")) {
+                        projectService.updateProject(project.get());
+                        projectService.createDevis(totalCost,LocalDate.now(),devis.getDateValidite(),devis.isAccepte(),id);
+                        System.out.println("Nouveau devis enregistré avec succès.");
+                    } else {
+                        System.out.println("Opération annulée.");
+                    }
+                }
+            }
+        }
+    }
+
     public Client SelectClient() {
         System.out.println("--- Recherche de client ---");
         System.out.println("Souhaitez-vous chercher un client existant ou en ajouter un nouveau ?");
         System.out.println("1. Chercher un client existant");
         System.out.println("2. Ajouter un nouveau client");
-        System.out.print("Choisissez une option : ");
-        int choice = scanner.nextInt();
+        int choice = InputValidate.getValidateInt("Entrez votre choix : ");
         do {
-        switch (choice) {
-            case 1:
-                System.out.println("--- Recherche de client existant ---");
-                System.out.print("Entrez le nom du client : ");
-                scanner.nextLine();
-                String nomClient = scanner.nextLine();
-                Optional<Client> client = clientService.getClientByNom(nomClient);
-                if (client.isPresent()) {
-                    System.out.println("Client trouvé !");
-                    System.out.println("Nom : " + client.get().getNom());
-                    System.out.println("Adresse : " + client.get().getAdresse());
-                    System.out.println("Numéro de téléphone : " + client.get().getTelephone());
-                    System.out.print("Souhaitez-vous continuer avec ce client ? (y/n) : ");
-                    String response = scanner.next();
-                    if (response.equalsIgnoreCase("y")) {
-                        return client.get();
+            switch (choice) {
+                case 1:
+                    System.out.println("--- Recherche de client existant ---");
+                    String nomClient = InputValidate.getValidateName("Entrez le nom du client : ");
+                    Optional<Client> client = clientService.getClientByNom(nomClient);
+                    if (client.isPresent()) {
+                        System.out.println("Client trouvé !");
+                        PrintData.printClientData(client.get());
+                        System.out.print("Souhaitez-vous continuer avec ce client ? (y/n) : ");
+                        String response = scanner.next();
+                        if (response.equalsIgnoreCase("y")) {
+                            return client.get();
+                        }
+                    } else {
+                        System.out.println("Client non trouvé.");
+                        System.out.print("Voulez-vous réessayer ? (y/n) : ");
+                        String response = scanner.next();
+                        if (response.equalsIgnoreCase("n")) {
+                            return null;
+                        }
                     }
-                } else {
-                    System.out.println("Client non trouvé.");
-                    System.out.print("Voulez-vous réessayer ? (y/n) : ");
-                    String response = scanner.next();
-                    if (response.equalsIgnoreCase("n")) {
-                        return null;
-                    }
-                }
-            case 2:
-                System.out.println("--- Ajout d'un nouveau client ---");
-                System.out.print("Entrez le nom du client : ");
-                scanner.nextLine();
-                String nom = scanner.nextLine();
-                System.out.print("Entrez l'adresse du client : ");
-                String adresse = scanner.nextLine();
-                System.out.print("Entrez le numéro de téléphone du client : ");
-                String telephone = scanner.next();
-                System.out.print("Le client est-il un professionnel ? (true/false) : ");
-                boolean estProfessionnel = scanner.nextBoolean();
-                System.out.print("Entrez le pourcentage de remise du client (0-100) : ");
-                double remise = scanner.nextDouble();
-                return clientService.createClient(nom, adresse, telephone, estProfessionnel, remise);
-            default:
-                return null;
-        }
+                case 2:
+                    System.out.println("--- Ajout d'un nouveau client ---");
+                    String nom = InputValidate.getValidateName("Entrez le nom du client : ");
+                    System.out.print("Entrez l'adresse du client : ");
+                    String adresse = scanner.nextLine();
+                    System.out.print("Entrez le numéro de téléphone du client : ");
+                    String telephone = scanner.next();
+                    boolean estProfessionnel = InputValidate.getValidateBoolean("Le client est-il un professionnel ? (true/false) : ");
+                    double remise = InputValidate.getValidateDouble("Entrez le pourcentage de remise du client : ");
+                    return clientService.createClient(nom, adresse, telephone, estProfessionnel, remise);
+                default:
+                    return null;
+            }
         } while (true);
     }
 
@@ -125,9 +179,7 @@ public class ProjectController {
             return;
         }
         System.out.println("--- Création d'un Nouveau Projet ---");
-        System.out.print("Entrez le nom du projet : ");
-        scanner.nextLine();
-        String nomProjet = scanner.nextLine();
+        String nomProjet = InputValidate.getValidateName("Entrez le nom du projet : ");
         Project project = projectService.createProject(nomProjet, client.getId());
         if (project == null) {
             System.out.println("Erreur lors de la création du projet.");
@@ -138,12 +190,9 @@ public class ProjectController {
             System.out.print("Entrez le nom du matériau : ");
             String nomMateriau = scanner.nextLine();
             scanner.nextLine();
-            System.out.print("Entrez la quantité de ce matériau (en m²) : ");
-            double quantite = scanner.nextDouble();
-            System.out.print("Entrez le coût unitaire de ce matériau (€/m²) : ");
-            double coutUnitaire = scanner.nextDouble();
-            System.out.print("Entrez le coût de transport de ce matériau (€) : ");
-            double coutTransport = scanner.nextDouble();
+            double quantite = InputValidate.getValidateDouble("Entrez la quantité de ce matériau (m²) : ");
+            double coutUnitaire = InputValidate.getValidateDouble("Entrez le coût unitaire de ce matériau (€/m²) : ");
+            double coutTransport = InputValidate.getValidateDouble("Entrez le coût de transport de ce matériau (€) : ");
             double coefficientQualite = 0;
             do {
                 System.out.print("Entrez le coefficient de qualité du matériau (1.0 = standard, > 1.0 = haute qualité) : ");
@@ -154,8 +203,8 @@ public class ProjectController {
                     scanner.next();
                     continue;
                 }
-                if (coefficientQualite < 1.0) {
-                    System.out.println("Le coefficient de qualité doit être supérieur ou égal à 1.0.");
+                if (coefficientQualite < 1.0 || coefficientQualite > 2) {
+                    System.out.println("Le coefficient de qualité doit être supérieur ou égal à 1.0 et inférieur ou égal à 2.0.");
                 } else {
                     break;
                 }
@@ -166,18 +215,14 @@ public class ProjectController {
         } while (scanner.next().equalsIgnoreCase("y"));
         System.out.println("--- Ajout de la main-d'œuvre ---");
         do {
-            System.out.print("Entrez le type de main-d'œuvre (e.g., Ouvrier de base, Spécialiste) : ");
-            scanner.nextLine();
-            String type = scanner.nextLine();
-            System.out.print("Entrez le taux horaire de cette main-d'œuvre (€/h) : ");
-            double tauxHoraire = scanner.nextDouble();
-            System.out.print("Entrez le nombre d'heures travaillées : ");
-            double heuresTravaillees = scanner.nextDouble();
+            String type = InputValidate.getValidateWorkforceType("Entrez le type de main-d'œuvre (e.g., Ouvrier de base, Spécialiste) : ");
+            double tauxHoraire = InputValidate.getValidateDouble("Entrez le taux horaire de cette main-d'œuvre (€/h) : ");
+            double heuresTravaillees = InputValidate.getValidateDouble("Entrez le nombre d'heures travaillées : ");
             double facteurProductivite;
             do {
                 System.out.print("Entrez le facteur de productivité (1.0 = standard, > 1.0 = haute productivité) : ");
                 try {
-                facteurProductivite = scanner.nextDouble();
+                    facteurProductivite = scanner.nextDouble();
                 } catch (Exception e) {
                     System.out.println("Veuillez entrer un nombre valide.");
                     scanner.next();
@@ -205,8 +250,7 @@ public class ProjectController {
         boolean applyTVA = scanner.next().equalsIgnoreCase("y");
         double tauxTVA = 0;
         if (applyTVA) {
-            System.out.print("Entrez le pourcentage de TVA (%) : ");
-            tauxTVA = scanner.nextDouble();
+            tauxTVA = InputValidate.getValidateDouble("Entrez le taux de TVA à appliquer (%) : ");
         }
         boolean tvaSuccess = componentService.applyTVA(project.getId(), tauxTVA);
         if (!tvaSuccess) {
@@ -217,8 +261,7 @@ public class ProjectController {
         boolean applyMarge = scanner.next().equalsIgnoreCase("y");
         double margeBeneficiaire = 0;
         if (applyMarge) {
-            System.out.print("Entrez le pourcentage de marge bénéficiaire (%) : ");
-            margeBeneficiaire = scanner.nextDouble();
+            margeBeneficiaire = InputValidate.getValidateDouble("Entrez le pourcentage de marge bénéficiaire à appliquer (%) : ");
         }
         boolean margeSuccess = projectService.applyMargeBeneficiaire(project.getId(), margeBeneficiaire);
         project.setMargeBeneficiaire(margeBeneficiaire);
@@ -233,17 +276,15 @@ public class ProjectController {
         showProjectDetails(project.getId());
 
         System.out.println("--- Enregistrement du Devis ---");
-        System.out.print("Entrez la date d'émission du devis (format : yyyy-mm-dd) : ");
-        scanner.nextLine();
-        LocalDate dateEmission = LocalDate.parse(scanner.nextLine());
-        System.out.print("Entrez la date de validité du devis (format : yyyy-mm-dd) : ");
-        LocalDate dateValidite = LocalDate.parse(scanner.nextLine());
+        LocalDate dateEmission = InputValidate.getValidateDate("Entrez la date d'émission du devis (format : yyyy-mm-dd) : ");
         System.out.print("Souhaitez-vous enregistrer le devis ? (y/n) : ");
+        LocalDate dateValidite = null;
         if (scanner.next().equalsIgnoreCase("y")) {
             double montantEstime = coutTotal * (1 + margeBeneficiaire / 100);
             System.out.println("Shoisir devis accepté ou non (y/n) : ");
             boolean devisAccepte ;
             if (scanner.next().equalsIgnoreCase("y")) {
+                dateValidite = InputValidate.getValidateDate("Entrez la date de validité du devis (format : yyyy-mm-dd) : ");
                 devisAccepte = true;
                 montantEstime = montantEstime * (1 + client.getRemise() / 100);
             } else {
@@ -324,6 +365,4 @@ public class ProjectController {
             System.out.println("Projet introuvable.");
         }
     }
-
-
 }
