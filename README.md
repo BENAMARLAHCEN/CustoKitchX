@@ -24,33 +24,18 @@
 
 #####  Table of Contents
 
-- [ Overview](#-overview)
-- [ Features](#-features)
+
 - [ Repository Structure](#-repository-structure)
 - [ Modules](#-modules)
 - [ Getting Started](#-getting-started)
     - [ Prerequisites](#-prerequisites)
     - [ Installation](#-installation)
-    - [ Usage](#-usage)
-    - [ Tests](#-tests)
 - [ Project Roadmap](#-project-roadmap)
 - [ Contributing](#-contributing)
-- [ License](#-license)
-- [ Acknowledgments](#-acknowledgments)
 
 ---
 
-##  Overview
 
-<code>❯ REPLACE-ME</code>
-
----
-
-##  Features
-
-<code>❯ REPLACE-ME</code>
-
----
 
 ##  Repository Structure
 
@@ -179,36 +164,8 @@ Build the project from source:
 ❯ cd CustoKitchX
 ```
 
-3. Install the required dependencies:
-```sh
-❯ mvn clean install
-```
-
-###  Usage
-
-To run the project, execute the following command:
-
-```sh
-❯ java -jar target/myapp.jar
-```
-
-###  Tests
-
-Execute the test suite using the following command:
-
-```sh
-❯ mvn test
-```
-
 ---
 
-##  Project Roadmap
-
-- [X] **`Task 1`**: <strike>Implement feature one.</strike>
-- [ ] **`Task 2`**: Implement feature two.
-- [ ] **`Task 3`**: Implement feature three.
-
----
 
 ##  Contributing
 
@@ -252,11 +209,4 @@ Contributions are welcome! Here are several ways you can contribute:
    </a>
 </p>
 </details>
-
----
-
-##  Acknowledgments
-
-- List any resources, contributors, inspiration, etc. here.
-
 ---
