@@ -164,6 +164,7 @@ public class ProjectController {
                     String nom = InputValidate.getValidateName("Entrez le nom du client : ");
                     System.out.print("Entrez l'adresse du client : ");
                     String adresse = scanner.nextLine();
+                    scanner.nextLine();
                     System.out.print("Entrez le numéro de téléphone du client : ");
                     String telephone = scanner.next();
                     boolean estProfessionnel = InputValidate.getValidateBoolean("Le client est-il un professionnel ? (true/false) : ");
@@ -308,12 +309,12 @@ public class ProjectController {
     public void showProjects() {
         System.out.println("--- Liste des Projets ---");
         projectService.getProjects().forEach(project -> {
-            System.out.println("====================================");
+            System.out.println("============================================================================================================");
             showProjectDetails(project.getId());
             System.out.println("------------------------------------");
             showDevisDetails(project.getId());
             System.out.println("------------------------------------");
-            System.out.println("====================================");
+            System.out.println("============================================================================================================");
         });
     }
 
